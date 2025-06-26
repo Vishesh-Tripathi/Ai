@@ -1,5 +1,5 @@
 
-import { analyzeResume } from "@/app/lib/groq";
+import { analyzeResume } from "@/lib/groq";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 

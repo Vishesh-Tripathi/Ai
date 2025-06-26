@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { FileText, Wand2, Loader2, ChevronRight, Clipboard, Check, CircleCheck, CircleAlert, Lightbulb } from 'lucide-react';
+import { SignedIn, SignedOut, SignInButton, useUser } from '@clerk/nextjs';
 import {
   Chart as ChartJS,
   BarElement,
@@ -23,36 +24,75 @@ ChartJS.register(
 );
 
 export default function ResumePage() {
+  const { isSignedIn, user, isLoaded } = useUser();
   const [resumeText, setResumeText] = useState('');
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [role, setRole] = useState('');
 
-  const handleAnalyze = async () => {
-    setLoading(true);
-    setResult(null);
-    setCopied(false);
+  // Early return for authentication check
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 text-blue-400 animate-spin mx-auto mb-4" />
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
-    try {
-      const res = await fetch('/api/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ resumeText, role }),
-      });
+  if (!isSignedIn) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-6">
+        <div className="bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-700 text-center max-w-md">
+          <FileText className="w-16 h-16 text-blue-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-4">Authentication Required</h2>
+          <p className="text-gray-400 mb-6">Please sign in to access the Resume Analyzer</p>
+          <SignInButton mode="modal">
+            <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-all">
+              Sign In to Continue
+            </button>
+          </SignInButton>
+        </div>
+      </div>
+    );
+  }
 
-      const data = await res.json();
-      if (data.success) {
-        setResult(data.result);
+ const handleAnalyze = async () => {
+  setLoading(true);
+  setResult(null);
+  setCopied(false);
+
+  try {
+    const res = await fetch("/api/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ resumeText, role }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      setResult(data.result);
+    } else {
+      // Handle specific error status codes
+      if (res.status === 403) {
+        setResult({ error: "You’ve reached your trial limit. Upgrade your plan to continue." });
+      } else if (res.status === 401) {
+        setResult({ error: "Please sign in to analyze your resume." });
       } else {
-        setResult({ error: 'Failed to analyze resume. Please try again.' });
+        setResult({ error: data.error || "Failed to analyze resume. Please try again." });
       }
-    } catch (error) {
-      setResult({ error: 'Network error. Please check your connection.' });
-    } finally {
-      setLoading(false);
     }
-  };
+  } catch (error) {
+    setResult({ error: "Network error. Please check your connection." });
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleCopy = () => {
     if (result) {
@@ -61,16 +101,36 @@ export default function ResumePage() {
       setTimeout(() => setCopied(false), 2000);
     }
   };
-
   return (
-    <div className=" mx-auto p-6 bg-gray-900 min-h-screen">
+    <>
+      <SignedOut>
+        <div className="min-h-screen bg-gray-900 flex items-center justify-center p-6">
+          <div className="bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-700 text-center max-w-md">
+            <FileText className="w-16 h-16 text-blue-400 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-white mb-4">Authentication Required</h2>
+            <p className="text-gray-400 mb-6">Please sign in to access the Resume Analyzer</p>
+            <SignInButton mode="modal">
+              <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-all">
+                Sign In to Continue
+              </button>
+            </SignInButton>
+          </div>
+        </div>
+      </SignedOut>
+      
+      <SignedIn>
+        <div className=" mx-auto p-6 bg-gray-900 min-h-screen">
       <div className="text-center mb-10">
         <h1 className="text-4xl md:text-5xl font-bold mb-4 flex items-center justify-center gap-3 text-blue-400">
           <Wand2 className="text-purple-400" size={36} />
           <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
             Resume Wizard
-          </span>
-        </h1>
+          </span>        </h1>
+        {user && (
+          <p className="text-blue-400 text-lg mb-2">
+            Welcome back, {user.firstName || user.emailAddresses[0]?.emailAddress}!
+          </p>
+        )}
         <p className="text-gray-400 max-w-2xl mx-auto text-lg">
           AI-powered resume analysis with detailed insights and optimization suggestions
         </p>
@@ -425,12 +485,13 @@ export default function ResumePage() {
                   <p className="text-sm mt-1 text-gray-500">
                     {resumeText ? 'Click "Analyze Resume" to get started' : 'Enter your resume text first'}
                   </p>
-                </div>
-              )}
+                </div>              )}
             </div>
           </div>
         </div>
       </div>
     </div>
+      </SignedIn>
+    </>
   );
 }

@@ -17,8 +17,10 @@ import {
   Shield,
   Sparkles
 } from "lucide-react";
+
 import Image from "next/image";
 import { useRouter } from 'next/navigation';
+import { SignedIn, SignedOut, SignInButton, SignUpButton, useUser, UserButton, } from "@clerk/nextjs";
 
 export default function LandingPage() {
   const [activeFeature, setActiveFeature] = useState(0);
@@ -26,6 +28,7 @@ export default function LandingPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDark, setIsDark] = useState(false);
   const router = useRouter();
+  const { isSignedIn, user } = useUser();
   
   const texts = [
     "analyze your resume...",
@@ -130,7 +133,7 @@ export default function LandingPage() {
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
       {/* Navigation */}
-      <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
+      {/* <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
         <div className="flex items-center space-x-3">
           <div className="p-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white">
             <Wand2 className="w-5 h-5" />
@@ -144,6 +147,27 @@ export default function LandingPage() {
           <a href="#how-it-works" className="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors">How It Works</a>
           <a href="#benefits" className="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors">Benefits</a>
           <a onClick={() => router.push('/pricing')} className="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors">Pricing</a>
+          <SignedOut>
+                  <SignInButton mode="modal">
+                    <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                      Sign In
+                    </button>
+                  </SignInButton>
+                  <SignUpButton mode="modal">
+                    <button className="px-4 py-2 border border-blue-600 text-blue-600 rounded hover:bg-blue-50">
+                      Sign Up
+                    </button>
+                  </SignUpButton>
+                </SignedOut>
+                <SignedIn>
+                  <UserButton 
+                    appearance={{
+                      elements: {
+                        avatarBox: "w-8 h-8"
+                      }
+                    }}
+                  />
+                </SignedIn>
           <button 
             onClick={() => setIsDark(!isDark)}
             className="p-2 bg-white rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
@@ -168,7 +192,7 @@ export default function LandingPage() {
             )}
           </button>
         </div>
-      </nav>
+      </nav> */}
 
       {/* Hero Section */}
       <section className="container mx-auto px-6 py-16 md:py-24 text-center">
@@ -186,14 +210,12 @@ export default function LandingPage() {
               <span className="animate-pulse">|</span>
             </span>
           </p>
-          
-          {/* Product Cards */}
+            {/* Product Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto mb-16">
             {products.map((product, index) => (
               <div 
                 key={index}
                 className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all cursor-pointer"
-                onClick={() => router.push(product.route)}
               >
                 <div className="flex flex-col items-center text-center">
                   <div className="p-3 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 dark:from-gray-700 dark:to-gray-700 mb-4">
@@ -201,9 +223,23 @@ export default function LandingPage() {
                   </div>
                   <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-white">{product.title}</h3>
                   <p className="text-gray-600 dark:text-gray-400 mb-4">{product.description}</p>
-                  <button className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-all">
-                    {product.action} <ArrowRight className="w-4 h-4" />
-                  </button>
+                  
+                  <SignedIn>
+                    <button 
+                      onClick={() => router.push(product.route)}
+                      className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-all"
+                    >
+                      {product.action} <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </SignedIn>
+                  
+                  <SignedOut>
+                    <SignInButton mode="modal">
+                      <button className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-all">
+                        Sign In to {product.action} <ArrowRight className="w-4 h-4" />
+                      </button>
+                    </SignInButton>
+                  </SignedOut>
                 </div>
               </div>
             ))}
@@ -346,20 +382,34 @@ export default function LandingPage() {
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Transform Your Job Search?</h2>
           <p className="text-xl mb-10 max-w-2xl mx-auto opacity-90">
             Join thousands of professionals who landed their dream jobs with our help
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <button 
-              onClick={() => router.push('/resume')}
-              className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-lg text-lg font-medium transition-all transform hover:scale-105 flex items-center justify-center gap-2"
-            >
-              Analyze My Resume <FileText className="w-5 h-5" />
-            </button>
-            <button 
-              onClick={() => router.push('/interviewpanel')}
-              className="border-2 border-white text-white hover:bg-white/10 px-8 py-4 rounded-lg text-lg font-medium transition-colors flex items-center justify-center gap-2"
-            >
-              Practice Interview <Mic className="w-5 h-5" />
-            </button>
+          </p>          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <SignedIn>
+              <button 
+                onClick={() => router.push('/resume')}
+                className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-lg text-lg font-medium transition-all transform hover:scale-105 flex items-center justify-center gap-2"
+              >
+                Analyze My Resume <FileText className="w-5 h-5" />
+              </button>
+              <button 
+                onClick={() => router.push('/interviewpanel')}
+                className="border-2 border-white text-white hover:bg-white/10 px-8 py-4 rounded-lg text-lg font-medium transition-colors flex items-center justify-center gap-2"
+              >
+                Practice Interview <Mic className="w-5 h-5" />
+              </button>
+            </SignedIn>
+            
+            <SignedOut>
+              <SignInButton mode="modal">
+                <button className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-lg text-lg font-medium transition-all transform hover:scale-105 flex items-center justify-center gap-2">
+                  Sign In to Analyze Resume <FileText className="w-5 h-5" />
+                </button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <button className="border-2 border-white text-white hover:bg-white/10 px-8 py-4 rounded-lg text-lg font-medium transition-colors flex items-center justify-center gap-2">
+                  Sign Up to Practice Interview <Mic className="w-5 h-5" />
+                </button>
+              </SignUpButton>
+            </SignedOut>
           </div>
         </div>
       </section>

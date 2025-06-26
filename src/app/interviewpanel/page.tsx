@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { parseLLMResponse } from '../lib/parsefeedback';
 import { speakText } from '../lib/speak';
 import { Mic, MicOff, Wand2, Loader2, ChevronRight, Clipboard, Check, CircleCheck, CircleAlert, Clock } from 'lucide-react';
+import { SignedIn, SignedOut, SignInButton, useUser } from '@clerk/nextjs';
 
 declare global {
   interface Window {
@@ -15,6 +16,7 @@ declare global {
 type InterviewStage = 'setup' | 'interview' | 'completed';
 
 export default function InterviewPanel() {
+  const { isSignedIn, user, isLoaded } = useUser();
   const [stage, setStage] = useState<InterviewStage>('setup');
   const [currentQuestion, setCurrentQuestion] = useState("");
   const [answer, setAnswer] = useState("");
@@ -27,11 +29,39 @@ export default function InterviewPanel() {
   const [listening, setListening] = useState(false);
   const [interviewDuration, setInterviewDuration] = useState(10); // Default 10 minutes
   const [timeLeft, setTimeLeft] = useState(0);
-  const [totalScore, setTotalScore] = useState(0);
-  const [questionsAnswered, setQuestionsAnswered] = useState(0);
+  const [totalScore, setTotalScore] = useState(0);  const [questionsAnswered, setQuestionsAnswered] = useState(0);
   const recognitionRef = useRef<any>(null);
   const fullTranscriptRef = useRef("");
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Early return for authentication check
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 text-blue-400 animate-spin mx-auto mb-4" />
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isSignedIn) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-6">
+        <div className="bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-700 text-center max-w-md">
+          <Mic className="w-16 h-16 text-blue-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-4">Authentication Required</h2>
+          <p className="text-gray-400 mb-6">Please sign in to access the AI Interview Panel</p>
+          <SignInButton mode="modal">
+            <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-all">
+              Sign In to Continue
+            </button>
+          </SignInButton>
+        </div>
+      </div>
+    );
+  }
 
   // Timer countdown effect
   useEffect(() => {
@@ -181,8 +211,12 @@ export default function InterviewPanel() {
               <Wand2 className="text-purple-400" size={36} />
               <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
                 AI Interview Coach
-              </span>
-            </h1>
+              </span>            </h1>
+            {user && (
+              <p className="text-blue-400 text-lg mb-2">
+                Welcome back, {user.firstName || user.emailAddresses[0]?.emailAddress}!
+              </p>
+            )}
             <p className="text-gray-400 max-w-2xl mx-auto text-lg">
               Set up your mock interview session
             </p>

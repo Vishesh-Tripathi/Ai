@@ -1,34 +1,30 @@
 'use client';
-
 export const dynamic = "force-dynamic";
 
-
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { CheckCircle, Loader2, ArrowRight, FileText, Mic } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 
 export default function SuccessPage() {
   const { user } = useUser();
-  const searchParams = useSearchParams();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<any>(null);
 
   useEffect(() => {
-    const sessionId = searchParams.get('session_id');
-    
-    if (sessionId) {
-      // In a real application, you would verify the session with your backend
+    const query = new URLSearchParams(window.location.search);
+    const id = query.get('session_id');
+
+    if (id) {
       setTimeout(() => {
-        setSession({ id: sessionId });
+        setSession({ id });
         setLoading(false);
       }, 2000);
     } else {
       setLoading(false);
     }
-  }, [searchParams]);
+  }, []);
 
   if (loading) {
     return (

@@ -103,8 +103,15 @@ export default function ResumePage() {
   };
   return (
     <>
+     <div className="fixed inset-0 overflow-hidden z-0 pointer-events-none">
+  <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-gradient-to-br from-blue-500 via-blue-400 to-blue-300 rounded-full opacity-50 blur-3xl animate-float brightness-125 saturate-150"></div>
+
+  <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-500 via-purple-400 to-pink-300 rounded-full opacity-50 blur-3xl animate-float-delay brightness-125 saturate-150"></div>
+
+  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-72 h-72 bg-gradient-to-br from-green-400 via-teal-400 to-cyan-300 rounded-full opacity-50 blur-3xl animate-float brightness-125 saturate-150"></div>
+</div>
       <SignedOut>
-        <div className="min-h-screen bg-gray-900 flex items-center justify-center p-6">
+        <div className="min-h-screen backdrop-blur-3xl border border-white/20 dark:border-gray-200/10 bg-gray-900 flex items-center justify-center p-6">
           <div className="bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-700 text-center max-w-md">
             <FileText className="w-16 h-16 text-blue-400 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-white mb-4">Authentication Required</h2>
@@ -119,7 +126,7 @@ export default function ResumePage() {
       </SignedOut>
       
       <SignedIn>
-        <div className=" mx-auto p-6 bg-gray-900 min-h-screen">
+        <div className=" mx-auto p-6   min-h-screen">
       <div className="text-center mb-10">
         <h1 className="text-4xl md:text-5xl font-bold mb-4 flex items-center justify-center gap-3 text-blue-400">
           <Wand2 className="text-purple-400" size={36} />
@@ -136,16 +143,16 @@ export default function ResumePage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1  lg:grid-cols-3 gap-8">
         {/* Input Section */}
-        <div className="lg:col-span-1 space-y-6">
-          <div className="bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
+        <div className="lg:col-span-1  space-y-6">
+          <div className=" backdrop-blur-3xl border border-white/20 dark:border-gray-200/10 rounded-xl p-6 shadow-lg  ">
             <h2 className="text-xl font-semibold flex items-center gap-2 text-white mb-4">
               <FileText size={22} className="text-blue-400" /> 
               Resume Content
             </h2>
             
-            <div className="space-y-5">
+            <div className="space-y-5 ">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Target Role
@@ -155,7 +162,7 @@ export default function ResumePage() {
                   placeholder="e.g. Senior Frontend Developer"
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
-                  className="w-full bg-gray-700 border border-gray-600 text-white p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all placeholder-gray-400"
+                  className="w-full  border    text-white p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all placeholder-gray-400"
                 />
               </div>
 
@@ -170,7 +177,7 @@ export default function ResumePage() {
                 </div>
                 <textarea
                   rows={12}
-                  className="w-full bg-gray-700 border border-gray-600 text-white p-4 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all placeholder-gray-400"
+                  className="w-full  border  text-white p-4 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all placeholder-gray-400"
                   value={resumeText}
                   onChange={(e) => setResumeText(e.target.value)}
                   placeholder="Paste your resume text here..."
@@ -182,7 +189,7 @@ export default function ResumePage() {
                 disabled={loading || !resumeText.trim()}
                 className={`w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
                   loading || !resumeText.trim()
-                    ? 'bg-gray-600 cursor-not-allowed text-gray-400'
+                    ? 'border cursor-not-allowed text-gray-400'
                     : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl'
                 }`}
               >
@@ -203,8 +210,8 @@ export default function ResumePage() {
         </div>
 
         {/* Results Section */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
+        <div className="lg:col-span-2  space-y-6">
+          <div className="backdrop-blur-3xl  border-white/20 dark:border-gray-200/10 rounded-xl p-6 shadow-lg border ">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold flex items-center gap-2 text-white">
                 <Clipboard size={22} className="text-blue-400" /> 
@@ -240,9 +247,9 @@ export default function ResumePage() {
                 ) : (
                   <div className="space-y-8">
                     {/* Score Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
                       {/* ATS Score */}
-                      <div className="bg-gray-700 p-5 rounded-xl shadow border border-gray-600">
+                      <div className=" p-5 rounded-xl shadow border border-gray-600 ">
                         <h3 className="font-semibold text-center mb-4 text-gray-200">ATS Compatibility</h3>
                         <div className="h-56 flex flex-col items-center">
                           <div className="w-40 h-40 relative">
@@ -287,7 +294,7 @@ export default function ResumePage() {
                       </div>
 
                       {/* Skills Match */}
-                      <div className="bg-gray-700 p-5 rounded-xl shadow border border-gray-600">
+                      <div className=" p-5 rounded-xl shadow border border-gray-600">
                         <h3 className="font-semibold text-center mb-4 text-gray-200">Skills Match</h3>
                         <div className="h-56">
                           <Bar
@@ -350,9 +357,9 @@ export default function ResumePage() {
                     </div>
 
                     {/* Skills Section */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
                       {/* Present Skills */}
-                      <div className="bg-gray-700 p-5 rounded-xl border border-gray-600">
+                      <div className="b  p-5 rounded-xl border border-gray-600">
                         <h3 className="font-semibold text-lg flex items-center gap-2 text-green-400 mb-3">
                           <CircleCheck size={18} /> Skills Found ({result.skillsMatchPercentage}% Match)
                         </h3>
@@ -366,7 +373,7 @@ export default function ResumePage() {
                       </div>
 
                       {/* Missing Skills */}
-                      <div className="bg-gray-700 p-5 rounded-xl border border-gray-600">
+                      <div className=" p-5 rounded-xl border border-gray-600">
                         <h3 className="font-semibold text-lg flex items-center gap-2 text-red-400 mb-3">
                           <CircleAlert size={18} /> Missing Skills
                         </h3>
@@ -383,7 +390,7 @@ export default function ResumePage() {
                     {/* Insights Section */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       {/* Strengths */}
-                      <div className="bg-gray-700 p-5 rounded-xl border border-blue-600/30">
+                      <div className=" p-5 rounded-xl border border-blue-600/30">
                         <h3 className="font-semibold text-lg flex items-center gap-2 text-blue-400 mb-3">
                           <CircleCheck size={18} /> Strengths
                         </h3>
@@ -398,7 +405,7 @@ export default function ResumePage() {
                       </div>
 
                       {/* Weaknesses */}
-                      <div className="bg-gray-700 p-5 rounded-xl border border-red-600/30">
+                      <div className=" p-5 rounded-xl border border-red-600/30">
                         <h3 className="font-semibold text-lg flex items-center gap-2 text-red-400 mb-3">
                           <CircleAlert size={18} /> Weaknesses
                         </h3>
@@ -415,7 +422,7 @@ export default function ResumePage() {
                       </div>
 
                       {/* Suggestions */}
-                      <div className="bg-gray-700 p-5 rounded-xl border border-purple-600/30">
+                      <div className=" p-5 rounded-xl border border-purple-600/30">
                         <h3 className="font-semibold text-lg flex items-center gap-2 text-purple-400 mb-3">
                           <Lightbulb size={18} /> Suggestions
                         </h3>
@@ -433,11 +440,11 @@ export default function ResumePage() {
                     {/* Additional Sections */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {/* Experience */}
-                      <div className="bg-gray-700 p-5 rounded-xl border border-gray-600">
+                      <div className=" p-5 rounded-xl border border-gray-600">
                         <h3 className="font-semibold text-lg text-gray-200 mb-3">Experience Relevance</h3>
                         <div className="space-y-4">
                           {result.experienceRelevance.map((exp: any, i: number) => (
-                            <div key={i} className="bg-gray-800 p-3 rounded-lg">
+                            <div key={i} className=" p-3 rounded-lg">
                               <div className="flex justify-between items-start">
                                 <span className="font-medium text-blue-400">{exp.role}</span>
                                 <span className={`px-2 py-1 rounded text-xs font-medium ${
@@ -455,9 +462,9 @@ export default function ResumePage() {
                       </div>
 
                       {/* Education */}
-                      <div className="bg-gray-700 p-5 rounded-xl border border-gray-600">
+                      <div className=" p-5 rounded-xl border border-gray-600">
                         <h3 className="font-semibold text-lg text-gray-200 mb-3">Education Alignment</h3>
-                        <div className="bg-gray-800 p-4 rounded-lg">
+                        <div className=" p-4 rounded-lg">
                           <div className="flex justify-between items-start">
                             <span className="font-medium text-blue-400">{result.educationAlignment.degree}</span>
                             <span className={`px-2 py-1 rounded text-xs font-medium ${

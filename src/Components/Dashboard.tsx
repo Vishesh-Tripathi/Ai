@@ -113,7 +113,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div className=" mt-8 min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
 
     <div className="fixed inset-0 overflow-hidden z-0 pointer-events-none">
   <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-gradient-to-br from-blue-500 via-blue-400 to-blue-300 rounded-full opacity-50 blur-3xl animate-float brightness-125 saturate-150"></div>

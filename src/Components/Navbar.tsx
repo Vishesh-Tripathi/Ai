@@ -62,6 +62,24 @@ export function Navbar() {
         </SignedOut>
 
         <SignedIn>
+          <button 
+            onClick={() => router.push('/dashboard')} 
+            className="nav-link hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors"
+          >
+            Dashboard
+          </button>
+          <button 
+            onClick={() => router.push('/resume')} 
+            className="nav-link hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors"
+          >
+            Resume
+          </button>
+          <button 
+            onClick={() => router.push('/interviewpanel')} 
+            className="nav-link hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors"
+          >
+            Interview
+          </button>
           <UserButton
             appearance={{
               elements: {

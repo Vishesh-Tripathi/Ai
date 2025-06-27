@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
       success_url: `${req.nextUrl.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.nextUrl.origin}/pricing`,
       metadata: {
-        userId: userId,
+       clerkId: userId,
       },
     });
 

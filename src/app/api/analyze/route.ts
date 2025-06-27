@@ -25,20 +25,20 @@ export async function POST(req: Request) {
     }
 
     // ✅ 2. Check if trial is already used
-    if (user.plan === "trial" && user.resumeUsed) {
+    if (user.plan === "trial" && user.resumeUsed===1) {
       return NextResponse.json({ error: "Trial resume analysis already used" }, { status: 403 });
     }
 
     // ✅ 3. Analyze resume
     const result = await analyzeResume(resumeText, role);
 
-    // ✅ 4. Mark trial as used (if applicable)
-    if (user.plan === "trial") {
+    
+   
       await prisma.user.update({
         where: { clerkId: userId },
-        data: { resumeUsed: 1 },
+        data: { resumeUsed: user.resumeUsed + 1 },
       });
-    }
+   
 
     return NextResponse.json({ success: true, result });
   } catch (error) {

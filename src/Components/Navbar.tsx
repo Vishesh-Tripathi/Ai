@@ -8,13 +8,15 @@ import {
   SignedIn,
   SignedOut,
   UserButton,
+  useAuth,
 } from '@clerk/nextjs';
 import { useState } from 'react';
+import Link from 'next/link';
 
 export function Navbar() {
   const [isDark, setIsDark] = useState(false);
   const router = useRouter();
-
+  const {isSignedIn} = useAuth();
   const toggleDarkMode = () => {
     document.documentElement.classList.toggle('dark');
     setIsDark(!isDark);
@@ -26,71 +28,50 @@ export function Navbar() {
           <div className="p-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white">
             <Wand2 className="w-5 h-5" />
           </div>
-          <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+          <Link href={'/'} className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
             CareerPrepAI
-          </span>
+          </Link>
         </div>
 
-      <div className="hidden md:flex space-x-6 items-center">
-        <a href="#features" className="nav-link hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors">
-          Features
-        </a>
-        <a href="#how-it-works" className="nav-link hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors">
-          How It Works
-        </a>
-        <a href="#benefits" className="nav-link hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors">
-          Benefits
-        </a>
-        <button 
-          onClick={() => router.push('/pricing')} 
-          className="nav-link hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors"
-        >
-          Pricing
-        </button>
+      <div className="hidden md:flex space-x-6 items-center bg-gray-800 rounded-full p-2">
+  <Link href="#features" className="animated-link pl-4 cursor-pointer">Features</Link>
+  <Link href="#how-it-works" className="animated-link cursor-pointer">How It Works</Link>
+  <Link href="#benefits" className="animated-link cursor-pointer">Benefits</Link>
 
-        <SignedOut>
-          <SignInButton mode="modal">
-            <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-              Sign In
-            </button>
-          </SignInButton>
-          <SignUpButton mode="modal">
-            <button className="px-4 py-2 border border-blue-600 text-blue-600 rounded hover:bg-blue-50 transition-colors">
-              Sign Up
-            </button>
-          </SignUpButton>
-        </SignedOut>
+  <button onClick={() => router.push('/pricing')} className="animated-link">Pricing</button>
 
-        <SignedIn>
-          <button 
-            onClick={() => router.push('/dashboard')} 
-            className="nav-link hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors"
-          >
-            Dashboard
-          </button>
-          <button 
-            onClick={() => router.push('/resume')} 
-            className="nav-link hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors"
-          >
-            Resume
-          </button>
-          <button 
-            onClick={() => router.push('/interviewpanel')} 
-            className="nav-link hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors"
-          >
-            Interview
-          </button>
-          <UserButton
-            appearance={{
-              elements: {
-                avatarBox: 'w-8 h-8',
-              },
-            }}
-          />
-        </SignedIn>
+  <SignedOut>
+    <SignInButton mode="modal">
+      <button className="animated-link pl-2 cursor-pointer">Sign In</button>
+    </SignInButton>
+    <SignUpButton mode="modal">
+      <button className="animated-link pl-2 cursor-pointer">Sign Up</button>
+    </SignUpButton>
+  </SignedOut>
 
-        <DarkModeToggle isDark={isDark} toggleDarkMode={toggleDarkMode} />
-      </div>
+ 
+    {isSignedIn && (
+      <>
+        <Link href="/dashboard" className="animated-link cursor-pointer">Dashboard</Link>
+        <Link href="/resume" className="animated-link cursor-pointer">Resume</Link>
+        <Link href="/interviewpanel" className="animated-link  cursor-pointer">Interview</Link>
+        <UserButton
+          appearance={{
+            elements: {
+              avatarBox: 'w-8 h-8',
+            },
+          }}
+        />
+      </>
+    )}
+      
+ 
+
+  <div className="pr-2 animated-link cursor-pointer">
+    <DarkModeToggle isDark={isDark} toggleDarkMode={toggleDarkMode} />
+  </div>
+</div>
+
     </nav>
   );
 }

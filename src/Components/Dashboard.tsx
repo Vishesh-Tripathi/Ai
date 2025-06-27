@@ -114,6 +114,18 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+
+    <div className="fixed inset-0 overflow-hidden z-0 pointer-events-none">
+  <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-gradient-to-br from-blue-500 via-blue-400 to-blue-300 rounded-full opacity-50 blur-3xl animate-float brightness-125 saturate-150"></div>
+
+  <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-500 via-purple-400 to-pink-300 rounded-full opacity-50 blur-3xl animate-float-delay brightness-125 saturate-150"></div>
+
+  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-72 h-72 bg-gradient-to-br from-green-400 via-teal-400 to-cyan-300 rounded-full opacity-50 blur-3xl animate-float brightness-125 saturate-150"></div>
+</div>
+
+
+
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
@@ -128,7 +140,7 @@ export default function Dashboard() {
         {/* User Info Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {/* Profile Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div className="backdrop-blur-3xl border border-white/20 dark:border-gray-200/10  rounded-lg shadow p-6">
             <div className="flex items-center space-x-4">
               <img
                 src={user.imageUrl}
@@ -151,7 +163,7 @@ export default function Dashboard() {
           </div>
 
           {/* Account Info */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div className="backdrop-blur-3xl border border-white/20 dark:border-gray-200/10  rounded-lg shadow p-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Account Information
             </h3>
@@ -176,12 +188,12 @@ export default function Dashboard() {
           </div>
 
           {/* Quick Stats */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div className="backdrop-blur-3xl border border-white/20 dark:border-gray-200/10  rounded-lg shadow p-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Quick Stats
             </h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
+            <div className="space-y-3 ">
+              <div className="  flex items-center  justify-between">
                 <span className="text-gray-600 dark:text-gray-400">Last Activity:</span>
                 <span className="text-gray-900 dark:text-white">{userStats.lastActivity}</span>
               </div>
@@ -201,7 +213,7 @@ export default function Dashboard() {
 
         {/* Activity Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div className="backdrop-blur-3xl border border-white/20 dark:border-gray-200/10  rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Resume Analyses</p>
@@ -211,7 +223,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div className="backdrop-blur-3xl border border-white/20 dark:border-gray-200/10  rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Interview Sessions</p>
@@ -221,7 +233,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div className="backdrop-blur-3xl border border-white/20 dark:border-gray-200/10  rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Time</p>
@@ -231,7 +243,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div className="backdrop-blur-3xl border border-white/20 dark:border-gray-200/10  rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Progress Score</p>
@@ -245,7 +257,7 @@ export default function Dashboard() {
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div className=" backdrop-blur-3xl border border-white/20 dark:border-gray-200/10  p-4 rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Activity</h3>
           </div>

@@ -1,2 +1,24 @@
 @import "tailwindcss";
 
+
+
+.animated-link {
+  @apply relative text-white dark:text-gray-300  font-medium tracking-wide transition-colors duration-300;
+}
+
+.animated-link::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(to right, #3b82f6, #8b5cf6); /* from blue-500 to purple-500 */
+  transition: width 0.4s ease;
+}
+
+.animated-link:hover::before {
+  width: 100%;
+}
+
+

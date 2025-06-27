@@ -64,23 +64,24 @@ export default function InterviewPanel() {
   }
 
   // Timer countdown effect
-  useEffect(() => {
-    if (stage !== 'interview' || timeLeft <= 0) return;
+useEffect(() => {
+  if (stage !== 'interview' || timeLeft <= 0) return;
 
-    timerRef.current = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          endInterview();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 60000); // Update every minute
+  timerRef.current = setInterval(() => {
+    setTimeLeft(prev => {
+      if (prev <= 1) {
+        endInterview();
+        return 0;
+      }
+      return prev - 1;
+    });
+  }, 60000); // Update every second
 
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [stage, timeLeft]);
+  return () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+  };
+}, [stage, timeLeft]);
+
 
   // Speak question when it changes
   useEffect(() => {
@@ -135,14 +136,36 @@ export default function InterviewPanel() {
     setQuestionsAnswered(0);
   };
 
-  const endInterview = () => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
+ const endInterview = async () => {
+  if (timerRef.current) {
+    clearInterval(timerRef.current);
+  }
+
+  recognitionRef.current?.stop();
+  setListening(false);
+  setStage('completed');
+
+  try {
+    const response = await fetch('/api/interview', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'user-id': user?.id || '' // Or however you're securely identifying the user
+      },
+      body: JSON.stringify({
+        userId: user?.id, // assuming you're using Clerk or have access to user
+        timestamp: new Date().toISOString(),
+      }),
+    });
+    console.log(response)
+
+    if (!response.ok) {
+      console.error('Failed to update interview count');
     }
-    recognitionRef.current?.stop();
-    setListening(false);
-    setStage('completed');
-  };
+  } catch (error) {
+    console.error('Error while calling interview update API:', error);
+  }
+};
 
   const startListening = () => {
     recognitionRef.current?.start();

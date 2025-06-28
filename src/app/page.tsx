@@ -21,6 +21,9 @@ import {
 import Image from "next/image";
 import { useRouter } from 'next/navigation';
 import { SignedIn, SignedOut, SignInButton, SignUpButton, useUser, UserButton, } from "@clerk/nextjs";
+import HyperSpeed from "../Components/HyperSpeed";
+// @ts-ignore
+import CardSwap, { Card } from "../Components/Card";
 
 export default function LandingPage() {
   const [activeFeature, setActiveFeature] = useState(0);
@@ -67,31 +70,36 @@ export default function LandingPage() {
 
   // Features for both products
   const features = [
-    {
-      title: "Resume Analysis",
-      description: "Get detailed feedback on your resume's strengths and weaknesses",
-      icon: <FileText className="w-6 h-6" />,
-      color: "text-blue-600 dark:text-blue-400"
-    },
-    {
-      title: "ATS Optimization",
-      description: "Ensure your resume passes through applicant tracking systems",
-      icon: <Shield className="w-6 h-6" />,
-      color: "text-purple-600 dark:text-purple-400"
-    },
-    {
-      title: "AI Mock Interviews",
-      description: "Practice with realistic interview questions and feedback",
-      icon: <Mic className="w-6 h-6" />,
-      color: "text-emerald-600 dark:text-emerald-400"
-    },
-    {
-      title: "Performance Metrics",
-      description: "Track your progress with detailed scoring",
-      icon: <BarChart2 className="w-6 h-6" />,
-      color: "text-amber-600 dark:text-amber-400"
-    }
-  ];
+  {
+    title: "AI-Powered Resume Analysis",
+    description:
+      "Receive comprehensive, AI-driven insights into your resume's structure, content, and formatting. Get tailored recommendations to boost clarity, alignment with job roles, and professional appeal.",
+    icon: <FileText className="w-6 h-6" />,
+    color: "text-blue-600 dark:text-blue-400"
+  },
+  {
+    title: "ATS Compatibility Optimization",
+    description:
+      "Ensure your resume is perfectly formatted to bypass Applicant Tracking Systems (ATS). We check keyword alignment, file structure, and compliance to maximize visibility with recruiters.",
+    icon: <Shield className="w-6 h-6" />,
+    color: "text-purple-600 dark:text-purple-400"
+  },
+  {
+    title: "Interactive AI Mock Interviews",
+    description:
+      "Prepare like a pro with simulated interviews powered by AI. Practice industry-relevant questions, receive real-time feedback, and sharpen your communication and problem-solving skills.",
+    icon: <Mic className="w-6 h-6" />,
+    color: "text-emerald-600 dark:text-emerald-400"
+  },
+  {
+    title: "Performance Tracking & Analytics",
+    description:
+      "Monitor your readiness with detailed performance reports. Track your improvements, identify skill gaps, and gain confidence as you progress toward landing your dream job.",
+    icon: <BarChart2 className="w-6 h-6" />,
+    color: "text-amber-600 dark:text-amber-400"
+  }
+];
+
 
   // Benefits section
   const benefits = [
@@ -131,68 +139,16 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
+    <div className={`min-h-screen transition-colors duration-300  relative`}>
+      {/* HyperSpeed Background Animation */}
+      <div className="fixed inset-0 w-full h-full z-0">
+        <HyperSpeed />
+      </div>
+      
+      {/* Content with background overlay for readability */}
+      <div className="relative z-10 bg-gray-900/30  min-h-screen">
       {/* Navigation */}
-      {/* <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-            <Wand2 className="w-5 h-5" />
-          </div>
-          <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
-            CareerPrepAI
-          </span>
-        </div>
-        <div className="hidden md:flex space-x-6 items-center">
-          <a href="#features" className="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors">Features</a>
-          <a href="#how-it-works" className="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors">How It Works</a>
-          <a href="#benefits" className="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors">Benefits</a>
-          <a onClick={() => router.push('/pricing')} className="text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors">Pricing</a>
-          <SignedOut>
-                  <SignInButton mode="modal">
-                    <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                      Sign In
-                    </button>
-                  </SignInButton>
-                  <SignUpButton mode="modal">
-                    <button className="px-4 py-2 border border-blue-600 text-blue-600 rounded hover:bg-blue-50">
-                      Sign Up
-                    </button>
-                  </SignUpButton>
-                </SignedOut>
-                <SignedIn>
-                  <UserButton 
-                    appearance={{
-                      elements: {
-                        avatarBox: "w-8 h-8"
-                      }
-                    }}
-                  />
-                </SignedIn>
-          <button 
-            onClick={() => setIsDark(!isDark)}
-            className="p-2 bg-white rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-            aria-label="Toggle dark mode"
-          >
-            {isDark ? (
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="5"></circle>
-                <line x1="12" y1="1" x2="12" y2="3"></line>
-                <line x1="12" y1="21" x2="12" y2="23"></line>
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                <line x1="1" y1="12" x2="3" y2="12"></line>
-                <line x1="21" y1="12" x2="23" y2="12"></line>
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-              </svg>
-            )}
-          </button>
-        </div>
-      </nav> */}
+     
 
       {/* Hero Section */}
       <section className="container mx-auto px-6 py-16 md:py-24 text-center">
@@ -215,7 +171,7 @@ export default function LandingPage() {
             {products.map((product, index) => (
               <div 
                 key={index}
-                className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all cursor-pointer"
+                className=" backdrop-blur-sm bg-transparent p-6 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all cursor-pointer"
               >
                 <div className="flex flex-col items-center text-center">
                   <div className="p-3 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 dark:from-gray-700 dark:to-gray-700 mb-4">
@@ -258,39 +214,81 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-16 bg-white dark:bg-gray-950">
+      <section id="features" className="py-16 relative">
         <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
-                Powerful Features
-              </span>
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Everything you need to prepare for your dream job
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature, index) => (
-              <div 
-                key={index}
-                className={`p-6 rounded-xl border transition-all duration-300 ${activeFeature === index ? 'border-blue-500 dark:border-blue-400 bg-blue-50/50 dark:bg-gray-800 shadow-lg' : 'border-gray-200 dark:border-gray-800 hover:border-blue-300 dark:hover:border-blue-900'}`}
-                onMouseEnter={() => setActiveFeature(index)}
-              >
-                <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${feature.color}`}>
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-white">{feature.title}</h3>
-                <p className="text-gray-600 dark:text-gray-400">{feature.description}</p>
+          <div className="flex flex-col lg:flex-row items-center gap-12">
+            {/* Left side - Text content */}
+            <div className="lg:w-1/2">
+  <h2 className="text-3xl md:text-5xl font-bold mb-6">
+    <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+      Designed to Impress,
+      <br />
+      Built for Impact
+    </span>
+  </h2>
+  <p className="text-gray-600 dark:text-gray-400 text-lg mb-8">
+    Every feature is crafted with precision, performance, and user experience in mind.
+    Whether you're on desktop or mobile, light or dark mode—this section just works beautifully.
+  </p>
+
+  {/* Feature benefits list */}
+  <div className="space-y-4">
+    <div className="flex items-center gap-3">
+      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+      <span className="text-white font-medium">
+        Reliable – Always delivers a seamless and bug-free experience
+      </span>
+    </div>
+    <div className="flex items-center gap-3">
+      <div className="w-2 h-2 bg-white rounded-full"></div>
+      <span className="text-white font-medium">
+        Smooth – Responsive and fluid across all screen sizes
+      </span>
+    </div>
+    <div className="flex items-center gap-3">
+      <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+      <span className="text-white font-medium">
+        Customizable – Easily adaptable to different branding and themes
+      </span>
+    </div>
+  </div>
+</div>
+
+            
+            {/* Right side - Card animation */}
+            <div className="lg:w-1/2 relative ">
+              <div style={{ height: '600px', position: 'relative', width: '120%' }}>
+                <CardSwap
+                  cardDistance={80}
+                  verticalDistance={90}
+                  delay={3000}
+                  pauseOnHover={true}
+                  width={500}
+                  height={400}
+                  onCardClick={() => {}}
+                >
+                  {features.map((feature, index) => (
+                    // @ts-ignore
+                    <Card 
+                      key={index} 
+                      customClass="p-6  text-white border-gray-700"
+                    >
+                      <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${feature.color}`}>
+                        {feature.icon}
+                      </div>
+                      <h3 className="text-xl font-bold mb-2 text-white">{feature.title}</h3>
+                      <p className="text-gray-300">{feature.description}</p>
+                    </Card>
+                  ))}
+                </CardSwap>
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* Demo Section */}
-      <section id="how-it-works" className="  py-20 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800">
+      <section id="how-it-works" className="  py-20 dark:to-gray-800">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center gap-12">
             <div className="md:w-1/2">
@@ -318,7 +316,7 @@ export default function LandingPage() {
             </div>
             <div className="md:w-1/2 relative">
               <div className="absolute inset-0 bg-blue-500/10 dark:bg-blue-400/10 rounded-3xl blur-3xl -z-10"></div>
-              <div className="bg-white dark:bg-gray-800 p-1.5 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700">
+              <div className="bg-white dark:bg-transparent p-1.5 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700">
                 <Image
                   src="/img.png"
                   alt="Dashboard Demo"
@@ -333,7 +331,7 @@ export default function LandingPage() {
       </section>
 
       {/* Benefits Section */}
-      <section id="benefits" className="py-20 bg-white dark:bg-gray-950">
+      <section id="benefits" className="py-20 ">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -364,7 +362,7 @@ export default function LandingPage() {
                 icon: <Wand2 className="w-8 h-8 text-emerald-500" />
               }
             ].map((item, index) => (
-              <div key={index} className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all">
+              <div key={index} className="bg-white dark:bg-transparent p-6 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all">
                 <div className="w-12 h-12 rounded-full bg-blue-50 dark:bg-gray-700 flex items-center justify-center mb-4">
                   {item.icon}
                 </div>
@@ -377,8 +375,8 @@ export default function LandingPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-700 dark:to-purple-700 text-white">
-        <div className="container mx-auto px-6 text-center">
+      <section className="py-20  text-white">
+        <div className="container mx-auto px-6  text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Transform Your Job Search?</h2>
           <p className="text-xl mb-10 max-w-2xl mx-auto opacity-90">
             Join thousands of professionals who landed their dream jobs with our help
@@ -386,13 +384,13 @@ export default function LandingPage() {
             <SignedIn>
               <button 
                 onClick={() => router.push('/resume')}
-                className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-lg text-lg font-medium transition-all transform hover:scale-105 flex items-center justify-center gap-2"
+                className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-all"
               >
                 Analyze My Resume <FileText className="w-5 h-5" />
               </button>
               <button 
                 onClick={() => router.push('/interviewpanel')}
-                className="border-2 border-white text-white hover:bg-white/10 px-8 py-4 rounded-lg text-lg font-medium transition-colors flex items-center justify-center gap-2"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8 py-4 rounded-lg text-lg font-medium transition-colors flex items-center justify-center gap-2"
               >
                 Practice Interview <Mic className="w-5 h-5" />
               </button>
@@ -457,6 +455,7 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+      </div>
     </div>
   );
 }

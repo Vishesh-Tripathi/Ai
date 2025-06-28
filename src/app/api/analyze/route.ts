@@ -38,6 +38,18 @@ export async function POST(req: Request) {
         where: { clerkId: userId },
         data: { resumeUsed: user.resumeUsed + 1 },
       });
+      
+ await prisma.resumeAnalysis?.upsert({
+  where: { clerkId: user.id },
+  update: {
+    resultSummary: typeof result === "string" ? result : JSON.stringify(result),
+  },
+  create: {
+    clerkId: user.id,
+    resultSummary: typeof result === "string" ? result : JSON.stringify(result),
+  },
+});
+
    
 
     return NextResponse.json({ success: true, result });

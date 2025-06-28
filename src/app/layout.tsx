@@ -35,7 +35,7 @@ export default function RootLayout({
           <header>
             <Navbar />
           </header>
-          <main className="container mx-auto px-4 py-8">{children}</main>
+          <main className="">{children}</main>
         </body>
       </html>
     </ClerkProvider>

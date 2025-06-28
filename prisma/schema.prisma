@@ -16,3 +16,18 @@ model User {
   interviewUsed Int      @default(0)
   createdAt     DateTime @default(now())
 }
+
+model ResumeAnalysis{
+  id            String   @id @default(uuid())
+  clerkId       String   @unique
+  resultSummary String 
+  createdAt     DateTime @default(now())
+}
+
+model InterviewAnalysis{
+  id            String   @id @default(uuid())
+  clerkId       String   @unique
+  resultSummary String 
+  createdAt     DateTime @default(now())
+
+}

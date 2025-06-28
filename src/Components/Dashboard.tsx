@@ -3,6 +3,8 @@
 import { useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 import { User, Calendar, Mail, Shield, Activity, BarChart3, FileText, Mic, Crown } from 'lucide-react';
+import RecentSkeleton from './RecentSkeleton';
+import { FeedbackCard } from './Feedback';
 
 interface UserStats {
   resumeUsed: number;
@@ -17,6 +19,17 @@ interface UserStats {
 
 export default function Dashboard() {
   const { user, isLoaded } = useUser();
+  // Example
+const [recentActivity, setRecentActivity] = useState({
+  resume: [],
+  interview: []
+});
+
+  const [openModal, setOpenModal] = useState(false);
+  const [interviewModal, setInterviewModal] = useState(false);
+const [selectedResume, setSelectedResume] = useState<any>(null);
+const [selectedInterview, setSelectedInterview] = useState<any>(null);
+
   const [userStats, setUserStats] = useState<UserStats>({
     resumeUsed: 0,
     interviewUsed: 0,
@@ -32,8 +45,28 @@ export default function Dashboard() {
   useEffect(() => {
     if (isLoaded && user) {
       fetchUserData();
+      fetchRecentActivity();
     }
   }, [isLoaded, user]);
+
+  const fetchRecentActivity = async () => {
+    if (!user) return;
+
+    try {
+      // Fetch recent activity from API
+      const response = await fetch('/api/user/recent');
+      console.log("Ressssssssssssssssssss",response)
+      if (response.ok) {
+        const recentActivity = await response.json();
+       setRecentActivity(recentActivity);
+        console.log('Recent Activity:', recentActivity);
+      } else {
+        console.error('Failed to fetch recent activity');
+      }
+    } catch (error) {
+      console.error('Error in fetchRecentActivity:', error);
+    }
+  }
 
   const fetchUserData = async () => {
     if (!user) return;
@@ -113,6 +146,42 @@ export default function Dashboard() {
   }
 
   return (
+
+    <>
+     {interviewModal && selectedInterview && (
+  <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center">
+     <button
+        onClick={() => setInterviewModal(false)}
+        className="absolute top-4 right-4 text-white hover:text-gray-400"
+      >
+        ✖
+      </button>
+    <div className="bg-[#0f172a] border border-gray-600 rounded-xl p-4 w-full max-w-6xl h-[90vh] overflow-y-auto relative shadow-xl">
+     
+      
+      {/* Your Analysis Skeleton Component */}
+      <FeedbackCard analysisData={selectedInterview} />
+    </div>
+  </div>
+)}
+
+    {openModal && selectedResume && (
+  <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center">
+     <button
+        onClick={() => setOpenModal(false)}
+        className="absolute top-4 right-4 text-white hover:text-gray-400"
+      >
+        ✖
+      </button>
+    <div className="bg-[#0f172a] border border-gray-600 rounded-xl p-4 w-full max-w-6xl h-[90vh] overflow-y-auto relative shadow-xl">
+     
+      
+      {/* Your Analysis Skeleton Component */}
+      <RecentSkeleton  result={selectedResume} />
+    </div>
+  </div>
+)}
+
     <div className=" mt-8 min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
 
     <div className="fixed inset-0 overflow-hidden z-0 pointer-events-none">
@@ -256,38 +325,156 @@ export default function Dashboard() {
           </div>
         </div>
 
+    
         {/* Recent Activity */}
-        <div className=" backdrop-blur-3xl border border-white/20 dark:border-gray-200/10  p-4 rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Activity</h3>
-          </div>
-          <div className="p-6">
-            <div className="space-y-4">
-              <div className="flex items-center space-x-3">
-                <FileText className="w-5 h-5 text-blue-600" />
-                <div>
-                  <p className="text-gray-900 dark:text-white">Resume analysis completed</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">2 hours ago</p>
-                </div>
+<div className="backdrop-blur-3xl border border-white/20 dark:border-gray-200/10 p-4 rounded-lg shadow">
+  <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Activity</h3>
+  </div>
+
+  <div className="p-6 space-y-6">
+    {/* === Resume Section === */}
+    <div>
+      <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-2">Resume Analyses</h4>
+      {(!recentActivity?.resume || recentActivity.resume.length === 0) ? (
+        <p className="text-gray-500 dark:text-gray-400">No recent resume activity</p>
+      ) : (
+        recentActivity.resume.map((item: any) => {
+          let summary;
+          try {
+            summary = JSON.parse(item.resultSummary);
+          } catch {
+            summary = null;
+          }
+
+          const formatTimeAgo = (date: Date) => {
+            const now = new Date();
+            const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+            const intervals: [number, string][] = [
+              [60, 'second'],
+              [60, 'minute'],
+              [24, 'hour'],
+              [7, 'day'],
+              [4, 'week'],
+              [12, 'month'],
+              [Infinity, 'year'],
+            ];
+            let count = seconds;
+            for (let i = 0; i < intervals.length; i++) {
+              if (count < intervals[i][0]) {
+                const value = Math.floor(count);
+                const label = intervals[i][1];
+                return `${value} ${label}${value !== 1 ? 's' : ''} ago`;
+              }
+              count /= intervals[i][0];
+            }
+            return 'some time ago';
+          };
+
+          return (
+            <button
+              key={item.id}
+              onClick={() => {
+                setSelectedResume(summary);
+                setOpenModal(true);
+              }}
+              className="flex items-start space-x-3 w-full text-left hover:bg-white/5 p-3 rounded-md transition"
+            >
+              <FileText className="w-5 h-5 mt-1 text-blue-600" />
+              <div>
+                <p className="text-sm text-gray-900 dark:text-white font-medium">
+                  Resume analysis completed
+                  {summary?.atsScore !== undefined && (
+                    <span className="ml-2 text-xs text-blue-400 font-semibold">
+                      • ATS Score: {summary.atsScore}%
+                    </span>
+                  )}
+                </p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  {formatTimeAgo(new Date(item.createdAt))}
+                </p>
               </div>
-              <div className="flex items-center space-x-3">
-                <Mic className="w-5 h-5 text-purple-600" />
-                <div>
-                  <p className="text-gray-900 dark:text-white">Mock interview session</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">1 day ago</p>
-                </div>
+            </button>
+          );
+        })
+      )}
+    </div>
+
+    {/* === Interview Section === */}
+    <div>
+      <h4 className="text-md font-semibold text-gray-800 dark:text-gray-100 mb-2">Interview Summaries</h4>
+      {(!recentActivity?.interview || recentActivity.interview.length === 0) ? (
+        <p className="text-gray-500 dark:text-gray-400">No recent interview activity</p>
+      ) : (
+        recentActivity.interview.map((item: any) => {
+          let summary;
+          try {
+            summary = JSON.parse(item.resultSummary);
+          } catch {
+            summary = null;
+          }
+
+         
+
+
+            function formatTimeAgo(date: Date) {
+            const now = new Date();
+            const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+            const intervals: [number, string][] = [
+              [60, 'second'],
+              [60, 'minute'],
+              [24, 'hour'],
+              [7, 'day'],
+              [4, 'week'],
+              [12, 'month'],
+              [Infinity, 'year'],
+            ];
+            let count = seconds;
+            for (let i = 0; i < intervals.length; i++) {
+              if (count < intervals[i][0]) {
+              const value = Math.floor(count);
+              const label = intervals[i][1];
+              return `${value} ${label}${value !== 1 ? 's' : ''} ago`;
+              }
+              count /= intervals[i][0];
+            }
+            return 'some time ago';
+            }
+
+          return (
+            <button
+              key={item.id}
+              onClick={() => {
+                setSelectedInterview(summary);
+                setInterviewModal(true);
+              }}
+              className="flex items-start space-x-3 w-full text-left hover:bg-white/5 p-3 rounded-md transition"
+            >
+              <FileText className="w-5 h-5 mt-1 text-purple-500" />
+              <div>
+                <p className="text-sm text-gray-900 dark:text-white font-medium">
+                  Interview summary available
+                  {summary?.overallScore !== undefined && (
+                    <span className="ml-2 text-xs text-purple-400 font-semibold">
+                      • Score: {summary.overallScore}/10
+                    </span>
+                  )}
+                </p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  {formatTimeAgo(new Date(item.createdAt))}
+                </p>
               </div>
-              <div className="flex items-center space-x-3">
-                <User className="w-5 h-5 text-green-600" />
-                <div>
-                  <p className="text-gray-900 dark:text-white">Profile updated</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">3 days ago</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+            </button>
+          );
+        })
+      )}
+    </div>
+  </div>
+</div>
+
+
       </div>
     </div>
+    </>
   );
 }

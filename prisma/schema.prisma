@@ -19,14 +19,14 @@ model User {
 
 model ResumeAnalysis{
   id            String   @id @default(uuid())
-  clerkId       String   @unique
-  resultSummary String 
+  clerkId       String   
+  resultSummary String? 
   createdAt     DateTime @default(now())
-}
+}   
 
 model InterviewAnalysis{
   id            String   @id @default(uuid())
-  clerkId       String   @unique
+  clerkId       String  
   resultSummary String 
   createdAt     DateTime @default(now())
 

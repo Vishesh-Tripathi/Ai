@@ -5,6 +5,7 @@ import { parseLLMResponse } from '../lib/parsefeedback';
 import { speakText } from '../lib/speak';
 import { Mic, MicOff, Wand2, Loader2, ChevronRight, Clipboard, Check, CircleCheck, CircleAlert, Clock } from 'lucide-react';
 import { SignedIn, SignedOut, SignInButton, useUser } from '@clerk/nextjs';
+import { FeedbackCard } from '@/Components/Feedback';
 
 declare global {
   interface Window {
@@ -12,6 +13,10 @@ declare global {
     webkitSpeechRecognition: any;
   }
 }
+type QAEntry = {
+  question: string;
+  answer: string;
+};
 
 type InterviewStage = 'setup' | 'interview' | 'completed';
 
@@ -29,39 +34,13 @@ export default function InterviewPanel() {
   const [listening, setListening] = useState(false);
   const [interviewDuration, setInterviewDuration] = useState(10); // Default 10 minutes
   const [timeLeft, setTimeLeft] = useState(0);
-  const [totalScore, setTotalScore] = useState(0);  const [questionsAnswered, setQuestionsAnswered] = useState(0);
+  const [totalScore, setTotalScore] = useState(0);
+  const [questionsAnswered, setQuestionsAnswered] = useState(0);
   const recognitionRef = useRef<any>(null);
   const fullTranscriptRef = useRef("");
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Early return for authentication check
-  if (!isLoaded) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-8 h-8 text-blue-400 animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isSignedIn) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-6">
-        <div className="bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-700 text-center max-w-md">
-          <Mic className="w-16 h-16 text-blue-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-white mb-4">Authentication Required</h2>
-          <p className="text-gray-400 mb-6">Please sign in to access the AI Interview Panel</p>
-          <SignInButton mode="modal">
-            <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-all">
-              Sign In to Continue
-            </button>
-          </SignInButton>
-        </div>
-      </div>
-    );
-  }
+  const [conversationHistory, setConversationHistory] = useState<QAEntry[]>([]);
+  const [summary, setSummary] = useState<any>({});
 
   // Timer countdown effect
 useEffect(() => {
@@ -123,6 +102,35 @@ useEffect(() => {
     };
   }, [stage]);
 
+  // Authentication and loading state checks - moved after all hooks
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 text-blue-400 animate-spin mx-auto mb-4" />
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isSignedIn) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-6">
+        <div className="bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-700 text-center max-w-md">
+          <Mic className="w-16 h-16 text-blue-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-4">Authentication Required</h2>
+          <p className="text-gray-400 mb-6">Please sign in to access the AI Interview Panel</p>
+          <SignInButton mode="modal">
+            <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-all">
+              Sign In to Continue
+            </button>
+          </SignInButton>
+        </div>
+      </div>
+    );
+  }
+
   const startInterview = () => {
     if (!resumeText || !role || !experienceLevel) {
       alert("Please provide resume text, role, and experience level.");
@@ -137,6 +145,23 @@ useEffect(() => {
   };
 
  const endInterview = async () => {
+  const sum = await fetch('/api/interview/summary', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    resumeText,
+    role,
+    experienceLevel,
+    conversationHistory, // <-- THIS is your full Q&A log
+  })
+});
+if (!sum.ok) {
+  console.error('Failed to get interview summary');
+  return;
+}
+const summaryData = await sum.json();
+setSummary(summaryData.data);
+console.log('summary response:', summaryData.data);
   if (timerRef.current) {
     clearInterval(timerRef.current);
   }
@@ -182,6 +207,13 @@ useEffect(() => {
       alert("Please provide an answer before submitting.");
       return;
     }
+    setConversationHistory(prev => [
+    ...prev,
+    {
+      question: currentQuestion,
+      answer: answer.trim(),
+    }
+  ]);
 
     const res = await fetch("/api/next-question", {
       method: "POST",
@@ -373,38 +405,10 @@ useEffect(() => {
             </div>
           </div>
 
-          <div className="bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
-            <h2 className="text-xl font-semibold flex items-center gap-2 text-white mb-6">
-              <CircleCheck size={22} className="text-blue-400" /> 
-              Final Feedback
-            </h2>
-            
-            <div className="space-y-4">
-              <div className="bg-gray-700 p-4 rounded-lg border border-gray-600">
-                <p className="text-gray-200">
-                  {parseFloat(averageScore) >= 7 ? (
-                    "Excellent performance! You demonstrated strong knowledge and communication skills. With this level of preparation, you're well positioned for real interviews."
-                  ) : parseFloat(averageScore) >= 4 ? (
-                    "Good effort! You have a solid foundation but could benefit from more practice in certain areas. Review the feedback and try to improve your responses."
-                  ) : (
-                    "Keep practicing! This was a good start but there's significant room for improvement. Focus on understanding the questions better and structuring your answers."
-                  )}
-                </p>
-              </div>
+          <div className="container mx-auto p-4 max-w-4xl">
+      <FeedbackCard analysisData={summary} />
+    </div>
 
-              <button
-                onClick={() => {
-                  setStage('setup');
-                  setFeedback("");
-                  setScore("");
-                  setHistory([]);
-                }}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2"
-              >
-                Start New Interview
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     );

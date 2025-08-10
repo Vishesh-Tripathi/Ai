@@ -10,6 +10,7 @@ export async function GET(req: NextRequest) {
 
   try {
     // Fetch Resume Analysis
+    console.log("Fetching recent activity for user:", userId);
     const { data: resumeData, error: resumeError } = await supabase
       .from("ResumeAnalysis")
       .select("*")
@@ -17,6 +18,9 @@ export async function GET(req: NextRequest) {
       .order("createdAt", { ascending: false })
       .limit(10);
 
+
+       console.log("Fetching recent activity for user:", userId);
+       console.log("Resume Data:", resumeData);
     if (resumeError) {
       console.error("Error fetching resume data:", resumeError);
       return NextResponse.json(

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { parseLLMResponse } from '../lib/parsefeedback';
+import { parseLLMResponse } from '../libs/parsefeedback';
 import { Wand2, Loader2, ChevronRight, Clipboard, CircleCheck, Clock, Mic, MicOff, Volume2, VolumeX, Play, Square } from 'lucide-react';
 import { SignedIn, SignedOut, SignInButton, useUser } from '@clerk/nextjs';
 import { FeedbackCard } from '@/Components/Feedback';
@@ -206,11 +206,29 @@ export default function InterviewPanel() {
       alert("Please provide resume text, role, and experience level.");
       return;
     }
-    
-    setStage('interview');
-    setTimeLeft(interviewDuration);
-    setTotalScore(0);
-    setQuestionsAnswered(0);
+
+    // checking the plan
+    const checkPlan = async () => {
+      const res = await fetch("/api/interview/check-plan", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        
+        alert(errorData.error || "Failed to check plan. Please try again.");
+        return;
+      }
+
+      // Proceed with starting the interview
+      setStage("interview");
+      setTimeLeft(interviewDuration);
+      setTotalScore(0);
+      setQuestionsAnswered(0);
+    };
+
+    checkPlan();
     
     // Set the first question - this will trigger auto-speak via useEffect
     const firstQuestion = "Tell me about yourself and why you're interested in this role?";

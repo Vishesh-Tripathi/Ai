@@ -1,6 +1,7 @@
 
 import { analyzeResume } from "@/lib/groq";
 import { prisma } from "@/lib/prisma";
+import supabase from "@/lib/supabase";
 import { auth } from "@clerk/nextjs/server";
 
 
@@ -16,9 +17,13 @@ export async function POST(req: Request) {
     const { resumeText, role } = await req.json();
 
     // ✅ 1. Get user from Prisma
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
-    });
+    const {data:user,error} = await supabase
+    .from("User")
+    .select("*")
+    .eq("id", userId)
+    .single();
+
+    console.log("Analyzing resume for user:", userId, "Role:", role);
 
     if (!user) {
       return NextResponse.json({ error: "User not found in DB" }, { status: 404 });
@@ -34,17 +39,28 @@ export async function POST(req: Request) {
 
     
    
-      await prisma.user.update({
-        where: { clerkId: userId },
-        data: { resumeUsed: user.resumeUsed + 1 },
-      });
-      
-await prisma.resumeAnalysis.create({
-  data: {
-    clerkId: user.id,
-    resultSummary: typeof result === "string" ? result : JSON.stringify(result),
-  },
-});
+      await supabase
+        .from("User")
+        .update({ resumeUsed: user.resumeUsed + 1 })
+        .eq("id", userId);
+
+      const { error: insertError } = await supabase
+        .from("ResumeAnalysis")
+        .insert([
+          {
+            id:user.id,
+            clerkId: user.id,
+            resultSummary: typeof result === "string" ? result : JSON.stringify(result),
+          },
+        ]);
+
+      if (insertError) {
+        console.error("Error inserting into ResumeAnalysis:", insertError);
+        return NextResponse.json(
+          { success: false, error: "Failed to save analysis result" },
+          { status: 500 }
+        );
+      }
  
 
 

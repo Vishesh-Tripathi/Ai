@@ -4,6 +4,7 @@ import {
   getFinalInterviewSummaryPrompt,
   getBatchQuestionAnalysisPrompt 
 } from '@/lib/prompts';
+import supabase from '@/lib/supabase';
 import { auth } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -90,16 +91,22 @@ export async function POST(req: NextRequest) {
     };
 
     // Save to database
-    const analysisRecord = await prisma.interviewAnalysis.create({
-      data: {
+    // Save to Supabase
+    const { data: analysisRecord, error: supabaseError } = await supabase
+      .from('InterviewAnalysis')
+      .insert([
+      {
+        id:userId,
         clerkId: userId,
         resultSummary: JSON.stringify(fullAnalysis)
-      },
-      select: {
-        id: true,
-        createdAt: true
       }
-    });
+      ])
+      .select('id, createdAt')
+      .single();
+
+    if (supabaseError) {
+      throw new Error(supabaseError.message);
+    }
 
     return NextResponse.json({
       success: true,

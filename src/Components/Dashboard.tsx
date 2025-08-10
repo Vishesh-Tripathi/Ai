@@ -55,14 +55,11 @@ const [selectedInterview, setSelectedInterview] = useState<any>(null);
     try {
       // Fetch recent activity from API
       const response = await fetch('/api/user/recent');
-      console.log("Ressssssssssssssssssss",response)
-      if (response.ok) {
-        const recentActivity = await response.json();
+      console.log("Ressssssssssssssssssss",response.body)
+      const recentActivity = await response.json();
        setRecentActivity(recentActivity);
         console.log('Recent Activity:', recentActivity);
-      } else {
-        console.error('Failed to fetch recent activity');
-      }
+      
     } catch (error) {
       console.error('Error in fetchRecentActivity:', error);
     }
@@ -195,7 +192,7 @@ const [selectedInterview, setSelectedInterview] = useState<any>(null);
 
 
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto mt-20 px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -281,7 +278,7 @@ const [selectedInterview, setSelectedInterview] = useState<any>(null);
         </div>
 
         {/* Activity Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <div className="backdrop-blur-3xl border border-white/20 dark:border-gray-200/10  rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -302,7 +299,7 @@ const [selectedInterview, setSelectedInterview] = useState<any>(null);
             </div>
           </div>
 
-          <div className="backdrop-blur-3xl border border-white/20 dark:border-gray-200/10  rounded-lg shadow p-6">
+          {/* <div className="backdrop-blur-3xl border border-white/20 dark:border-gray-200/10  rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Time</p>
@@ -310,7 +307,7 @@ const [selectedInterview, setSelectedInterview] = useState<any>(null);
               </div>
               <Activity className="w-8 h-8 text-green-600" />
             </div>
-          </div>
+          </div> */}
 
           <div className="backdrop-blur-3xl border border-white/20 dark:border-gray-200/10  rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
@@ -347,28 +344,13 @@ const [selectedInterview, setSelectedInterview] = useState<any>(null);
             summary = null;
           }
 
-          const formatTimeAgo = (date: Date) => {
-            const now = new Date();
-            const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-            const intervals: [number, string][] = [
-              [60, 'second'],
-              [60, 'minute'],
-              [24, 'hour'],
-              [7, 'day'],
-              [4, 'week'],
-              [12, 'month'],
-              [Infinity, 'year'],
-            ];
-            let count = seconds;
-            for (let i = 0; i < intervals.length; i++) {
-              if (count < intervals[i][0]) {
-                const value = Math.floor(count);
-                const label = intervals[i][1];
-                return `${value} ${label}${value !== 1 ? 's' : ''} ago`;
-              }
-              count /= intervals[i][0];
-            }
-            return 'some time ago';
+          const formatExactDateTime = (dateString: string) => {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            });
           };
 
           return (
@@ -391,7 +373,7 @@ const [selectedInterview, setSelectedInterview] = useState<any>(null);
                   )}
                 </p>
                 <p className="text-xs text-gray-600 dark:text-gray-400">
-                  {formatTimeAgo(new Date(item.createdAt))}
+                  {formatExactDateTime(item.createdAt)}
                 </p>
               </div>
             </button>
@@ -417,28 +399,13 @@ const [selectedInterview, setSelectedInterview] = useState<any>(null);
          
 
 
-            function formatTimeAgo(date: Date) {
-            const now = new Date();
-            const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-            const intervals: [number, string][] = [
-              [60, 'second'],
-              [60, 'minute'],
-              [24, 'hour'],
-              [7, 'day'],
-              [4, 'week'],
-              [12, 'month'],
-              [Infinity, 'year'],
-            ];
-            let count = seconds;
-            for (let i = 0; i < intervals.length; i++) {
-              if (count < intervals[i][0]) {
-              const value = Math.floor(count);
-              const label = intervals[i][1];
-              return `${value} ${label}${value !== 1 ? 's' : ''} ago`;
-              }
-              count /= intervals[i][0];
-            }
-            return 'some time ago';
+          function formatExactDateTime(dateString: string) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            });
             }
 
           return (
@@ -461,7 +428,7 @@ const [selectedInterview, setSelectedInterview] = useState<any>(null);
                   )}
                 </p>
                 <p className="text-xs text-gray-600 dark:text-gray-400">
-                  {formatTimeAgo(new Date(item.createdAt))}
+                  {formatExactDateTime(item.createdAt)}
                 </p>
               </div>
             </button>
